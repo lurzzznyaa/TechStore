@@ -63,6 +63,7 @@ class UserAdmin(BaseUserAdmin):
             'first_name',
             'last_name',
             'phone_number',
+            'avatar',
             'role')}),
         ('Permissions', {'fields': ('is_admin', )}),
     )
