@@ -64,21 +64,26 @@ https://templatemo.com/tm-579-cyborg-gaming
                     </div>
                     <!-- ***** Search End ***** -->
                     <!-- ***** Menu Start ***** -->
-                    <ul class="nav">
+                    <ul class="nav" style="align-content: space-around">
                         <li><a href="index.html" class="active">Home</a></li>
                         <li><a href="browse.html">Browse</a></li>
                         <li><a href="details.html">Details</a></li>
                         <li><a href="streams.html">Streams</a></li>
                         {% if request.user.is_authenticated %}
-                        <li><a href="{% url 'profile' %}">{{ request.user.first_name }} <img src="
-                        {% if request.user.avatar %}
-                        {{ request.user.avatar.url }}
+                        <li style="display: flex; align-items: center;">
+                          <a href="{% url 'profile' %}" style="display: flex; align-items: center; gap: 8px;">
+                            {{ request.user.first_name }}
+                            <img style="width: 30px; height: 30px; object-fit: cover;" src=
+                                    "{% if request.user.avatar %}
+                                    {{ request.user.avatar.url }}
+                                    {% else %}
+                                    {% static 'assets/images/profile-header.jpg' %}
+                                    {% endif %}"
+                                 alt="">
+                          </a>
+                        </li>
                         {% else %}
-                        {% static 'assets/images/profile-header.jpg' %}
-                        {% endif %}
-                        " alt=""></a></li>
-                        {% else %}
-                        <li><a href="{% url 'login' %}">Войти</a></li>
+                        <li><a href="{% url 'login' %}">Log In <img src="{% static 'assets/images/profile-header.jpg' %}"></a></li>
                         {% endif %}
                     </ul>   
                     <a class='menu-trigger'>

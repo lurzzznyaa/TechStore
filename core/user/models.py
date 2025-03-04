@@ -38,36 +38,36 @@ class MyUserManager(BaseUserManager):
 class MyUser(AbstractBaseUser):
     first_name = models.CharField(
         max_length=123,
-        verbose_name='Имя',
+        verbose_name='First Name',
     )
     last_name = models.CharField(
         max_length=123,
-        verbose_name='Фамилия',
+        verbose_name='Second Name',
         blank=True,
         null=True
     )
     email = models.EmailField(
         unique=True,
-        verbose_name='Почта'
+        verbose_name='Email'
     )
     phone_number = models.CharField(
         max_length=15,
-        verbose_name='Номер телефона'
+        verbose_name='Phone number'
     )
     avatar = models.ImageField(
         upload_to='media/user_avatar',
-        verbose_name='Аватарка',
+        verbose_name='Profile picture',
         blank=True,
         null=True
     )
     role = models.PositiveSmallIntegerField(
         choices=(
-            (1, 'Обычный пользователь'),
-            (2, 'Модератор'),
-            (3, 'Бухгалтер'),
+            (1, 'User'),
+            (2, 'Moderator'),
+            (3, 'Accountant'),
         ),
         default=1,
-        verbose_name='Роль'
+        verbose_name='Role'
     )
     created_date = models.DateTimeField(
         auto_now_add=True
@@ -101,5 +101,5 @@ class MyUser(AbstractBaseUser):
         return self.is_admin
 
     class Meta:
-        verbose_name = 'Пользователь'
-        verbose_name_plural = 'Пользователи'
+        verbose_name = 'User'
+        verbose_name_plural = 'Users'
