@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Модальное окно -->
+<div class="modal fade" id="cyborgModal" tabindex="-1" aria-labelledby="cyborgModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content" style="background-color: #1f1f1f; border: 1px solid #333; color: #fff;">
+      <div class="modal-header">
+        <h5 class="modal-title" id="cyborgModalLabel">Редактирование продукта</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: invert(1);"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Форма внутри модалки -->
+        <form method="post" action="{% url 'product_change' product.id %}" enctype="multipart/form-data">
+          {% csrf_token %}
+          {{ product_update_form.as_p  }}
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+            <button type="submit" class="btn btn-primary">Сохранить</button>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+  console.log("Страница загружена, модалка готова к использованию!");
+  });
+</script>
+{% endblock %}
