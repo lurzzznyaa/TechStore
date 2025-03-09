@@ -1,11 +1,12 @@
+from django.contrib.auth import get_user_model
 from django.db.models import Avg
 from django.http import Http404
 from django.shortcuts import render, get_object_or_404, redirect
-from django.template.defaulttags import comment
 
 from .forms import ProductCreateForm, ProductChangeForm
-from .models import Product, Rating, RatingAnswer
+from .models import Product, Rating, RatingAnswer, PaymentMethod, Order
 
+MyUser = get_user_model()
 
 def index_view(request):
     products = Product.objects.filter(is_active=True)
@@ -85,3 +86,44 @@ def rating_answer_view(request, rating_id):
             comment=comment
         ).save()
         return redirect('item', product_id=rating.product.id)
+
+
+def user_profile_view(request):
+    user = get_object_or_404(MyUser, id=request.user.id)
+    return render(request, 'main/user_profile.html', {'user': user})
+
+def product_payment_create(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    seller_payment_methods = PaymentMethod.objects.filter(user=product.user)
+
+    quantity = request.GET.get('quantity', 0)
+    try:
+        quantity = int(quantity)
+    except ValueError:
+        quantity = 0
+
+    total_price = product.price * quantity
+
+    if request.method == 'POST':
+        check = request.FILES.get('check', '')
+
+        order = Order(
+            user=request.user,
+            product=product,
+            quantity=quantity,
+            check_image=check
+        )
+        order.save()
+
+        return redirect('item', product.id)
+
+    return render(
+        request,
+        'main/product_payment.html',
+        {
+            'product': product,
+            'seller_payment_methods': seller_payment_methods,
+            'quantity': quantity,
+            'total_price': total_price
+        }
+    )

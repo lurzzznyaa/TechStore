@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
+from .choices import OrderStatisEnum
 
 User = get_user_model()
 
@@ -132,3 +133,69 @@ class RatingAnswer(models.Model):
     class Meta:
         verbose_name = 'Ответ на отзыв'
         verbose_name_plural = 'Ответы на отзывы'
+
+class PaymentMethod(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='payment_methods'
+    )
+    title = models.CharField(
+        max_length=100,
+    )
+
+    qr_image = models.ImageField(
+        upload_to='media/qr',
+        verbose_name='QR'
+    )
+
+    created_date = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    def __str__(self):
+        return f'{self.user} --> {self.title}'
+
+class Order(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='orders'
+    )
+
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        related_name='orders'
+    )
+
+    is_paid = models.BooleanField(
+        default=False
+    )
+
+    created_date = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    update_date = models.DateTimeField(
+        auto_now=True
+    )
+
+    quantity = models.PositiveSmallIntegerField(
+        default=1
+    )
+
+    check_image = models.ImageField(
+        upload_to='media/check'
+    )
+
+    status = models.CharField(
+        max_length=15,
+        choices=OrderStatisEnum.choices,
+        default=OrderStatisEnum.IN_PROCESSING
+    )
+
+    def __str__(self):
+        return f'{self.user} --> {self.product}'
+
+

@@ -56,6 +56,51 @@
     text-decoration: none;
     cursor: pointer;
   }
+
+  .change-btn {
+  background-color: #ec6090;
+  margin-top: -20px;
+  color: #fff
+  }
+
+  .change-btn:hover {
+   background-color: #FFF"
+  }
+
+  .quantity-container {
+    display: flex;
+    align-items: center;
+    margin-top: 20px; /* при необходимости, чтобы отодвинуть от карусели */
+  }
+
+  .quantity-container label {
+    margin-right: 10px;
+  }
+
+  .quantity-controls {
+    display: inline-flex;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    overflow: hidden; /* чтобы кнопки и инпут были аккуратно обрезаны по углам */
+  }
+
+  .quantity-controls .quantity-btn {
+    background-color: #f0f0f0;
+    border: none;
+    width: 40px;
+    cursor: pointer;
+    font-size: 18px;
+    color: #333;
+  }
+
+  .quantity-controls .quantity-btn:hover {
+    background-color: #e0e0e0;
+  }
+
+  .quantity-controls input[type="number"] {
+    border: none;
+    text-align: center;
+  }
 </style>
 
 <div
@@ -126,17 +171,20 @@
             <div class="featured-games header-text">
               <div
                 class="heading-section d-flex justify-content-between align-items-center">
-                <div>
+                <div class="d-flex align-items-center">
                   <h4>{{ product.title }}</h4>
-                  <span style="font-size: 24px; color: #fff">
+                  <span style="font-size: 24px; color: #fff; margin-left: 20px; margin-top: -20px">
                     <i class="fa fa-star" style="color: yellow"></i>
-                    {% if rating_avg %} {{ rating_avg }} {% else %} Отзывов пока
-                    нет {% endif %}
+                    {% if rating_avg %}
+                      {{ rating_avg }}
+                    {% else %}
+                      Отзывов пока нет
+                      {% endif %}
                   </span>
                 </div>
                 <button
                   type="button"
-                  class="btn btn-dark"
+                  class="btn btn-dark change-btn"
                   data-bs-toggle="modal"
                   data-bs-target="#cyborgModal">
                   Change
@@ -151,9 +199,16 @@
                       <h6>2.4K Streaming</h6>
                     </div>
                   </div>
-                  <h4>CS-GO<br /><span>249K Downloads</span></h4>
+                  <h4>{{ product.title }}<br /><span>{{ product.price }} som</span></h4>
                   <ul>
-                    <li><i class="fa fa-star"></i> 4.8</li>
+                    <li>
+                      <i class="fa fa-star"></i>
+                      {% if rating_avg %}
+                        {{ rating_avg }}
+                      {% else %}
+                        Отзывов пока нет
+                      {% endif %}
+                    </li>
                     <li><i class="fa fa-download"></i> 2.3M</li>
                   </ul>
                 </div>
@@ -169,22 +224,24 @@
               <ul>
                 {% for i in similar_products %}
                 <li>
-                  <img
-                    src="{{ i.main_image.url }}"
-                    alt=""
-                    class="templatemo-item" />
-                  <h4>{{ i.title }}</h4>
-                  <h6>Sandbox</h6>
-                  <span
-                    ><i class="fa fa-star" style="color: yellow"></i> 4.9</span
-                  >
-                  <span
-                    ><i class="fa fa-download" style="color: #ec6090"></i>
-                    2.2M</span
-                  >
-                  <div class="download">
-                    <a href="#"><i class="fa fa-download"></i></a>
-                  </div>
+                  <a href="{% url 'item' i.id %}">
+                    <img
+                      src="{{ i.main_image.url }}"
+                      alt=""
+                      class="templatemo-item" />
+                    <h4>{{ i.title }}</h4>
+                    <h6>Sandbox</h6>
+                    <span>
+                      <i class="fa fa-star" style="color: yellow"></i>
+                    </span>
+                    <span
+                      ><i class="fa fa-download" style="color: #ec6090"></i>
+                      2.2M</span
+                    >
+                    <div class="download">
+                      <a href="#"><i class="fa fa-download"></i></a>
+                    </div>
+                  </a>
                 </li>
                 {% endfor %}
               </ul>
@@ -198,6 +255,31 @@
         <br />
         <br />
         <!-- ***** Featured Games End ***** -->
+                <div class="quantity-container">
+          <form
+            id="paymentForm"
+            method="GET"
+            action="{% url 'product_payment_create' product.id %}">
+            <label for="quantity" style="color: #fff">Количество:</label>
+            <div class="quantity-controls">
+              <button type="button" class="quantity-btn minus-btn">−</button>
+              <input
+                type="number"
+                id="quantity"
+                name="quantity"
+                min="1"
+                value="1"
+                style="width: 50px; text-align: center" />
+              <button type="button" class="quantity-btn plus-btn">+</button>
+            </div>
+            <button
+              class="btn btn-primary"
+              style="margin-left: 10px"
+              type="submit">
+              В корзину
+            </button>
+          </form>
+        </div>
 
         <!-- ***** Featured Start ***** -->
         <div class="row">
@@ -245,7 +327,14 @@
                         <span>{{ product.category }}</span>
                       </div>
                       <ul>
-                        <li><i class="fa fa-star"></i> 4.8</li>
+                        <li>
+                          <i class="fa fa-star"></i>
+                          {% if rating_avg %}
+                            {{ rating_avg }}
+                          {% else %}
+                            Отзывов пока нет
+                          {% endif %}
+                        </li>
                         <li><i class="fa fa-download"></i> 2.3M</li>
                       </ul>
                     </div>
@@ -253,7 +342,14 @@
                   <div class="col-lg-6">
                     <div class="right-info">
                       <ul>
-                        <li><i class="fa fa-star"></i> 4.8</li>
+                        <li>
+                          <i class="fa fa-star"></i>
+                          {% if rating_avg %}
+                            {{ rating_avg }}
+                          {% else %}
+                            Отзывов пока нет
+                          {% endif %}
+                        </li>
                         <li><i class="fa fa-download"></i> 2.3M</li>
                         <li><i class="fa fa-server"></i> 36GB</li>
                         <li><i class="fa fa-gamepad"></i> Action</li>
@@ -374,7 +470,7 @@
                 {% if request.user == product.user %}
                 <button
                   id="myBtn{{ rating.id }}"
-                  class="btn btn-primary"
+                  class="btn btn-secondary change-btn"
                   style="margin-top: 10px">
                   Ответить
                 </button>
@@ -520,6 +616,22 @@
         }
       });
     });
+  });
+
+    const minusBtn = document.querySelector(".minus-btn");
+  const plusBtn = document.querySelector(".plus-btn");
+  const quantityInput = document.querySelector("#quantity");
+
+  minusBtn.addEventListener("click", function () {
+    let currentValue = parseInt(quantityInput.value) || 1;
+    if (currentValue > 1) {
+      quantityInput.value = currentValue - 1;
+    }
+  });
+
+  plusBtn.addEventListener("click", function () {
+    let currentValue = parseInt(quantityInput.value) || 1;
+    quantityInput.value = currentValue + 1;
   });
 </script>
 {% endblock %}
