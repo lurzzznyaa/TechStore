@@ -182,13 +182,15 @@
                       {% endif %}
                   </span>
                 </div>
-                <button
-                  type="button"
-                  class="btn btn-dark change-btn"
-                  data-bs-toggle="modal"
-                  data-bs-target="#cyborgModal">
-                  Change
-                </button>
+                {% if product.user == request.user %}
+                  <button
+                    type="button"
+                    class="btn btn-dark change-btn"
+                    data-bs-toggle="modal"
+                    data-bs-target="#cyborgModal">
+                    Change
+                  </button>
+                {% endif %}
               </div>
               <div class="owl-features owl-carousel">
                 {% for i in product.images.all %}
