@@ -64,6 +64,7 @@ class UserAdmin(BaseUserAdmin):
             'last_name',
             'phone_number',
             'avatar',
+            'is_otp_enabled',
             'role')}),
         ('Permissions', {'fields': ('is_admin', )}),
     )

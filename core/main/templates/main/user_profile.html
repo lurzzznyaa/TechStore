@@ -34,16 +34,25 @@
                     <p>You Haven't Gone Live yet. Go Live By Touching The Button Below.</p>
                     <div class="container">
                       <div class="main-border-button">
-                      <a href="#">Edit Profile</a>
-                      </div><div class="main-border-button">
-                      <a href="{% url 'logout' %}">Log out</a>
+                        <a href="#">Edit Profile</a>
+                      </div>
+                      <div class="main-border-button">
+                        <a href="{% url 'logout' %}">Log out</a>
                       </div>
                     </div>
                   </div>
                 </div>
                 <div class="col-lg-4 align-self-center">
                   <ul>
-                    <li>Games Downloaded <span>3</span></li>
+                    <li class="form-check form-switch">
+                      <form method="post" action="{% url 'otp_enable_view' %}">
+                          {% csrf_token %}
+                          <label class="form-check-label" for="flexSwitchCheckDefault">Enable OTP</label>
+                          <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" name="is_otp_enabled"
+                                 {% if user.is_otp_enabled %}checked{% endif %}
+                                 onchange="this.form.submit()">
+                      </form>
+                    </li>
                     <li>Email <span>{{ user.email }}</span></li>
                     <li>Role <span>{{ user.get_role_display }}</span></li>
                     <li>Date of registration<span>{{ user.created_date|date:"d.m.Y, H:i" }}</span></li>
@@ -89,38 +98,20 @@
         <div class="gaming-library profile-library">
           <div class="col-lg-12">
             <div class="heading-section">
-              <h4><em>Your Gaming</em> Library</h4>
+              <h4><em>List of</em> Goods</h4>
             </div>
+            {% for i in user.products.all %}
             <div class="item">
               <ul>
-                <li><img src="{% static 'assets/images/game-01.jpg' %}" alt="" class="templatemo-item"></li>
-                <li><h4>Dota 2</h4><span>Sandbox</span></li>
-                <li><h4>Date Added</h4><span>24/08/2036</span></li>
-                <li><h4>Hours Played</h4><span>634 H 22 Mins</span></li>
+                <li><img src="{{ i.main_image.url }}" alt="" class="templatemo-item"></li>
+                <li><h4>{{ i.title }}</h4><span>{{ i.category }}</span></li>
+                <li><h4>Category</h4><span>{{ i.category }}</span></li>
+                <li><h4>Price</h4><span>{{ i.price }} som</span></li>
                 <li><h4>Currently</h4><span>Downloaded</span></li>
-                <li><div class="main-border-button border-no-active"><a href="#">Donwloaded</a></div></li>
+                <li><div class="main-border-button"><a href="{% url 'item' i.id %}">Purchase</a></div></li>
               </ul>
             </div>
-            <div class="item">
-              <ul>
-                <li><img src="{% static 'assets/images/game-02.jpg' %}" alt="" class="templatemo-item"></li>
-                <li><h4>Fortnite</h4><span>Sandbox</span></li>
-                <li><h4>Date Added</h4><span>22/06/2036</span></li>
-                <li><h4>Hours Played</h4><span>745 H 22 Mins</span></li>
-                <li><h4>Currently</h4><span>Downloaded</span></li>
-                <li><div class="main-border-button border-no-active"><a href="#">Donwloaded</a></div></li>
-              </ul>
-            </div>
-            <div class="item last-item">
-              <ul>
-                <li><img src="{% static 'assets/images/game-03.jpg' %}" alt="" class="templatemo-item"></li>
-                <li><h4>CS-GO</h4><span>Sandbox</span></li>
-                <li><h4>Date Added</h4><span>21/04/2022</span></li>
-                <li><h4>Hours Played</h4><span>632 H 46 Mins</span></li>
-                <li><h4>Currently</h4><span>Downloaded</span></li>
-                <li><div class="main-border-button border-no-active"><a href="#">Donwloaded</a></div></li>
-              </ul>
-            </div>
+            {% endfor %}
           </div>
         </div>
         <!-- ***** Gaming Library End ***** -->

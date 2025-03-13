@@ -16,7 +16,7 @@ def user_register_view(request):
         form = UserRegisterForm(request.POST)
         if form.is_valid():
             form.save()
-            messages.success(request, 'Вы успешно зарегись!')
+            messages.success(request, "You've successfully registered your account!")
             return redirect('index')
 
         for field, errors in form.errors.items():
@@ -34,33 +34,38 @@ def generate_otp_code():
 
 def user_login_view(request):
     if request.method == 'POST':
-        user_email = request.POST['email']
-        user_password = request.POST['password']
+        user_email = request.POST.get('email')
+        user_password = request.POST.get('password')
 
         user = authenticate(request, username=user_email, password=user_password)
 
         if user:
-            otp = OTP(
-                user=user,
-                code=generate_otp_code()
-            )
-            otp.save()
+            if user.is_otp_enabled:
+                code = generate_otp_code()
+                OTP.objects.create(user=user, code=code)
 
-            code = generate_otp_code()
-            otp = OTP.objects.create(user=user, code=code)
+                send_mail(
+                    "Your OTP Code",
+                    f"Code: {code}",
+                    settings.DEFAULT_FROM_EMAIL,
+                    [user_email],
+                    fail_silently=False,
+                )
 
-            send_mail(
-                "Your code",
-                f"Код: {code}",
-                settings.DEFAULT_FROM_EMAIL,
-                [user_email],
-                fail_silently=False,
-            )
+                return redirect('otp_verify', user_id=user.id)
+            else:
+                login(request, user)
+                messages.success(request, "You've successfully logged in!")
+                return redirect('index')
+        else:
+            messages.error(request, "Invalid email or password")
 
     return render(request, 'account/user_login.html')
 
+
 def user_logout_view(request):
     logout(request)
+    messages.success(request, "You've successfully logged out!")
     return redirect('index')
 
 
@@ -74,6 +79,12 @@ def otp_verification_view(request, user_id):
 
         if otp:
             otp.if_used = True
+            otp.save()
             login(request, user)
-            messages.success(request, 'Вы успешно вошли в систему!')
+            messages.success(request, "You've successfully logged in!")
             return redirect('index')
+
+        else:
+            messages.error(request, 'Wrong OTP code!')
+
+    return render(request, 'account/otp_verify.html', {'user': user})

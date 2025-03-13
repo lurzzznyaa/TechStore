@@ -34,10 +34,14 @@ class Image(models.Model):
 
 
 class Product(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='products'
+    )
     title = models.CharField(
         max_length=123,
-        verbose_name='Название'
+        verbose_name='Название',
     )
     category = models.ForeignKey(
         Category,

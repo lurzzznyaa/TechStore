@@ -61,7 +61,7 @@
               {% if request.user.is_authenticated %}
               <li><a href="{% url 'product_create' %}">Create product</a></li>
               <li style="display: flex; align-items: center;">
-                <a href="{% url 'user_profile' %}" style="display: flex; align-items: center; gap: 8px;">
+                <a href="{% url 'user_profile' request.user.id %}" style="display: flex; align-items: center; gap: 8px;">
                   {{ request.user.first_name }}
                   <img style="width: 30px; height: 30px; object-fit: cover;" src=
                           "{% if request.user.avatar %}

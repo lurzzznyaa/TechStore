@@ -75,6 +75,9 @@ class MyUser(AbstractBaseUser):
     is_admin = models.BooleanField(
         default=False
     )
+    is_otp_enabled = models.BooleanField(
+        default=False
+    )
 
     objects = MyUserManager()
 

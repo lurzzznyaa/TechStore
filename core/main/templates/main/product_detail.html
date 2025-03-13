@@ -324,7 +324,7 @@
                     <div class="left-info">
                       <div class="left">
                         <h4>{{ product.title }}</h4>
-                        <span>{{ product.user }}</span>
+                        <span><a href="{% url 'user_profile' product.user.id %}">{{ product.user }}</a></span>
                       </div>
                       <ul>
                         <li>
@@ -462,9 +462,10 @@
                   padding: 15px;
                   border-radius: 5px;
                 ">
-                <strong style="color: #ec6090"
-                  >{{ rating.user.first_name }}</strong
-                ><br />
+                <strong style="color: #ec6090">
+                  <a href="{% url 'user_profile' rating.user.id %}">{{ rating.user.first_name }}</a>
+                </strong>
+                <br />
                 <p style="color: #fff">{{ rating.comment }}</p>
                 <p style="color: #fff">Оценка: {{ rating.count }}</p>
                 {% if request.user == product.user %}

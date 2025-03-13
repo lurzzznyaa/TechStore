@@ -88,8 +88,8 @@ def rating_answer_view(request, rating_id):
         return redirect('item', product_id=rating.product.id)
 
 
-def user_profile_view(request):
-    user = get_object_or_404(MyUser, id=request.user.id)
+def user_profile_view(request, user_id):
+    user = get_object_or_404(MyUser, id=user_id)
     return render(request, 'main/user_profile.html', {'user': user})
 
 def product_payment_create(request, product_id):
@@ -127,3 +127,15 @@ def product_payment_create(request, product_id):
             'total_price': total_price
         }
     )
+
+def otp_enable_view(request):
+    if request.method == "POST":
+        if request.POST.get("is_otp_enabled") == "on":
+            is_enabled = True
+        else:
+            is_enabled = False
+        request.user.is_otp_enabled = is_enabled
+        request.user.save()
+        return redirect("user_profile")
+
+    return redirect("user_profile")
