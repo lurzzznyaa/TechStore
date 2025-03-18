@@ -1,10 +1,14 @@
+from decimal import Decimal
+
 from django.contrib.auth import get_user_model
+from django.core.paginator import Paginator
 from django.db.models import Avg
 from django.http import Http404
 from django.shortcuts import render, get_object_or_404, redirect
 
+from .filters import ProductListFilter
 from .forms import ProductCreateForm, ProductChangeForm
-from .models import Product, Rating, RatingAnswer, PaymentMethod, Order
+from .models import Product, Rating, RatingAnswer, PaymentMethod, PaymentRequest, Category, Payment
 
 MyUser = get_user_model()
 
@@ -48,6 +52,9 @@ def product_create_view(request):
 def product_change_view(request, product_id):
     product = get_object_or_404(Product, id=product_id)
 
+    if product.user != request.user:
+        return redirect('item', product_id=product.id)
+
     if request.method == 'POST':
         form = ProductChangeForm(request.POST, request.FILES, instance=product)
         if form.is_valid():
@@ -90,7 +97,13 @@ def rating_answer_view(request, rating_id):
 
 def user_profile_view(request, user_id):
     user = get_object_or_404(MyUser, id=user_id)
-    return render(request, 'main/user_profile.html', {'user': user})
+    payment_requests = PaymentRequest.objects.filter(product__user=user, status='in_processing').order_by('-id')[:3]
+
+    return render(request,
+                  'main/user_profile.html',
+                  {
+                    'user': user, 'payment_requests': payment_requests})
+
 
 def product_payment_create(request, product_id):
     product = get_object_or_404(Product, id=product_id)
@@ -102,14 +115,15 @@ def product_payment_create(request, product_id):
     except ValueError:
         quantity = 0
 
-    total_price = product.price * quantity
+    total_price = product.price * Decimal(quantity)
 
     if request.method == 'POST':
         check = request.FILES.get('check', '')
 
-        order = Order(
+        order = PaymentRequest(
             user=request.user,
             product=product,
+            total_price=total_price,
             quantity=quantity,
             check_image=check
         )
@@ -139,3 +153,53 @@ def otp_enable_view(request):
         return redirect("user_profile")
 
     return redirect("user_profile")
+
+def product_list_view(request):
+    queryset = Product.objects.filter(is_active=True)
+
+    if 'product_search' in request.GET:
+        products_search = request.GET['product_search']
+        queryset = queryset.filter(title__icontains=products_search)
+
+    products = ProductListFilter(request.GET, queryset=queryset)
+    paginator = Paginator(products.qs, 16)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'main/product_list.html', {'page_obj': page_obj})
+
+def payment_requests_list_view(request):
+    payment_requests = PaymentRequest.objects.filter(product__user=request.user).order_by('-id')
+
+    return render(request, 'main/payment_requests.html', {'payment_requests': payment_requests})
+
+def payment_request_change_view(request, payment_request_id):
+    payment_request = get_object_or_404(PaymentRequest, id=payment_request_id)
+
+    if request.method == 'POST':
+        payment_request.status = request.POST.get('status', 'in_processing')
+        payment_request.save()
+
+        if payment_request.status == 'accepted':
+            payment = Payment(
+                user=payment_request.user,
+                product=payment_request.product.title,
+                total_price=payment_request.total_price,
+                check_image=payment_request.check_image,
+                quantity=payment_request.quantity
+            )
+
+            payment.save()
+
+
+    return redirect('payment_requests_list')
+
+def accepted_requests_view(request):
+    accepted_requests = Payment.objects.all()
+
+    total = 0
+
+    for i in accepted_requests:
+        total += i.total_price
+
+    return render(request, 'main/accepted_requests.html', {'accepted_requests': accepted_requests, 'total': total})

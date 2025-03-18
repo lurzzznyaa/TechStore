@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="page-content">
+        <!-- ***** Requests List Start ***** -->
+        <div class="gaming-library profile-library">
+          <div class="col-lg-12">
+            <div class="heading-section text-center mb-4">
+              <h4 class="text-light"><em>List of</em> Transactions</h4>
+            </div>
+            {% for i in accepted_requests %}
+            <div class="card mb-3" style="background: #222; border-radius: 15px; box-shadow: 0 4px 10px rgba(255, 0, 150, 0.2); color: white;">
+              <div class="card-body">
+                <div class="row align-items-center justify-content-center">
+                  <div class="col-md-2 text-center">
+                    <img src="{{ i.check_image.url }}" alt="Check Image" class="img-fluid rounded" style="max-width: 100px; border-radius: 10px;">
+                  </div>
+                  <div class="col-md-2 text-center">
+                    <h6 class="mb-1 text-pink">{{ i.user }}</h6>
+                    <small class="text-muted">User</small>
+                  </div>
+                  <div class="col-md-2 text-center">
+                    <h6 class="mb-1">{{ i.product }}</h6>
+                    <small class="text-muted">Product</small>
+                  </div>
+                  <div class="col-md-1 text-center">
+                    <h6 class="mb-1">{{ i.quantity }}</h6>
+                    <small class="text-muted">Quantity</small>
+                  </div>
+                  <div class="col-md-2 text-center">
+                    <h6 class="mb-1 text-success">${{ i.total_price }}</h6>
+                    <small class="text-muted">Total Price</small>
+                  </div>
+                  <div class="col-md-12 text-center mt-2">
+                    <a href="{{ i.check_image.url }}" download="{{ i.check_image.url }}" class="btn" style="background: linear-gradient(45deg, #ff0099, #6e0dd0); color: white; border-radius: 8px; padding: 6px 12px;">Download Check</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% empty %}
+            <p class="text-center text-light">No payment requests available.</p>
+            {% endfor %}
+              <p style="font-size: 24px; margin-top: 100px" class="text-success text-center">Total sum of all transactions:</p>
+              <p style="font-size: 24px"  class="text-success text-center">${{ total }}</p>
+          </div>
+        </div>
+        <!-- ***** Requests List End ***** -->
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

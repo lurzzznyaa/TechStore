@@ -17,7 +17,7 @@
   <link rel="stylesheet" href="{% static 'assets/css/templatemo-cyborg-gaming.css' %}">
   <link rel="stylesheet" href="{% static 'assets/css/owl.css' %}">
   <link rel="stylesheet" href="{% static 'assets/css/animate.css' %}">
-  <link rel="stylesheet"href="https://unpkg.com/swiper@7/swiper-bundle.min.css"/>
+<!--  <link rel="stylesheet"href="https://unpkg.com/swiper@7/swiper-bundle.min.css"/>-->
   </head>
 
   <body>
@@ -47,8 +47,8 @@
             <!-- ***** Logo End ***** -->
             <!-- ***** Search End ***** -->
             <div class="search-input">
-              <form id="search" action="#">
-                <input type="text" placeholder="Type Something" id='searchText' name="searchKeyword" onkeypress="handle" />
+              <form id="search" action="{% url 'catalog' %}" method="get">
+                <input type="text" placeholder="Type Something" id='searchText' name="product_search" onkeypress="handle" />
                 <i class="fa fa-search"></i>
               </form>
             </div>
@@ -56,7 +56,7 @@
             <!-- ***** Menu Start ***** -->
             <ul class="nav" style="align-content: space-around">
               <li><a href="index.html" class="active">Home</a></li>
-              <li><a href="browse.html">Browse</a></li>
+              <li><a href="{% url 'catalog' %}">All goods</a></li>
               <li><a href="details.html">Details</a></li>
               {% if request.user.is_authenticated %}
               <li><a href="{% url 'product_create' %}">Create product</a></li>

@@ -82,7 +82,8 @@ class Rating(models.Model):
     product = models.ForeignKey(
         Product,
         on_delete=models.CASCADE,
-        verbose_name='Продукт'
+        verbose_name='Продукт',
+        related_name='ratings'
     )
     count = models.PositiveSmallIntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(5)],
@@ -160,7 +161,7 @@ class PaymentMethod(models.Model):
     def __str__(self):
         return f'{self.user} --> {self.title}'
 
-class Order(models.Model):
+class PaymentRequest(models.Model):
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -192,6 +193,7 @@ class Order(models.Model):
     check_image = models.ImageField(
         upload_to='media/check'
     )
+    total_price = models.PositiveSmallIntegerField()
 
     status = models.CharField(
         max_length=15,
@@ -199,7 +201,31 @@ class Order(models.Model):
         default=OrderStatisEnum.IN_PROCESSING
     )
 
+
     def __str__(self):
         return f'{self.user} --> {self.product}'
 
 
+class Payment(models.Model):
+    user = models.CharField(
+        max_length=225,
+        verbose_name='Пользователь'
+    )
+    product = models.CharField(
+        max_length=225,
+        verbose_name='Продукт'
+    )
+    quantity = models.PositiveSmallIntegerField(
+        verbose_name='Количество'
+    )
+
+    check_image = models.ImageField(
+        upload_to='media/check',
+        verbose_name='Чек'
+    )
+    total_price = models.PositiveIntegerField(
+        verbose_name='Сумма'
+    )
+
+    def __str__(self):
+        return f'{self.user} --> {self.product}'
