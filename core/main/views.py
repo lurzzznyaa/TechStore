@@ -182,6 +182,7 @@ def payment_request_change_view(request, payment_request_id):
 
         if payment_request.status == 'accepted':
             payment = Payment(
+                seller=payment_request.product.user,
                 user=payment_request.user,
                 product=payment_request.product.title,
                 total_price=payment_request.total_price,
@@ -195,7 +196,7 @@ def payment_request_change_view(request, payment_request_id):
     return redirect('payment_requests_list')
 
 def accepted_requests_view(request):
-    accepted_requests = Payment.objects.all()
+    accepted_requests = Payment.objects.filter(seller=request.user)
 
     total = 0
 

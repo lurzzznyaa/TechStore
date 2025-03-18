@@ -207,6 +207,11 @@ class PaymentRequest(models.Model):
 
 
 class Payment(models.Model):
+    seller = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='payments'
+    )
     user = models.CharField(
         max_length=225,
         verbose_name='Пользователь'
